@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.slick-dots .slick-active div{
+  border-right: 4px solid black !important;
+  color: #222 !important;
+}
+@media(max-width:640px){
+    .slick-dots{
+        left: 0px !important;
+    }
+    .ami{
+        padding: 0 !important;
+    }
+}
