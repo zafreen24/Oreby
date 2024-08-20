@@ -7,10 +7,13 @@ import { RiArrowDownSFill } from "react-icons/ri";
 import { useState, useContext, useRef, useEffect } from "react";
 import CartImg from "../assets/cartimg.png";
 import { RxCross1 } from "react-icons/rx";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { apiData } from "./ContextApi";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { removeProduct } from "./slice/productSlice";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = () => {
   const info = useContext(apiData);
@@ -24,7 +27,10 @@ const Navbar = () => {
   const cartref = useRef();
   const userref = useRef();
   const userAccref = useRef();
+  const usertype = useRef();
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -42,6 +48,9 @@ const Navbar = () => {
         setuserShow(!userShow);
       } else {
         setuserShow(false);
+      }
+      if(usertype.current.contains(e.target)){
+        setUsercartShow(true);
       }
     };
 
@@ -65,7 +74,21 @@ const Navbar = () => {
       setSelectedIndex(0);
     }
   };
-
+  
+      
+   let handleDelete = (index) =>{
+    dispatch(removeProduct(index))
+    
+   }
+   let handleToNai = () =>{
+    toast("go to cart page")
+    setUsercartShow(false);
+    setTimeout(()=>{
+      navigate("/cart")
+    },1000)
+   
+   }
+  
   const handleSingleSearch = (id) => {
     navigate(`/product/${id}`);
     setSearchFilter([]);
@@ -87,6 +110,7 @@ const Navbar = () => {
     }
   };
 
+  
   return (
     <nav className="bg-[#f5f5f3] py-4">
       <Container>
@@ -188,6 +212,18 @@ const Navbar = () => {
                 </div>
               </div>
             </div>
+            <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
             {userShow && (
               <div className="absolute z-50 top-[30px] right-0 w-[300px] bg-[#262626] py-3 px-6">
                 <ul className="font-sans text-[16px] font-normal text-[#ffffffb2]">
@@ -203,9 +239,10 @@ const Navbar = () => {
                 </ul>
               </div>
             )}
-            {usercartShow && (
+           <div ref={usertype} className="">
+           {usercartShow && (
               <div className="w-[300px] absolute z-50 bg-[#F5F5F3] top-[49px] right-0">
-                {data.map((item)=>(
+                {data.map((item,index)=>(
                    <div className="py-3 ">
                    <div className="flex justify-around items-center bg-[#F5F5F3] h-[120px]">
                      <div className="">
@@ -219,7 +256,7 @@ const Navbar = () => {
                          {item.price}
                        </h5>
                      </div>
-                     <div className="">
+                     <div onClick={()=>handleDelete(index)} className="">
                        <RxCross1 />
                      </div>
                    </div>
@@ -232,12 +269,9 @@ const Navbar = () => {
                      </h3>
                      <div className="flex justify-around">
                        <div className="">
-                         <Link to="/cart"
-                           className="w-[148px] h-[50px] border-2 border-[#262626] inline-block text-center leading-[50px]"
-                           
-                         >
+                         <a onClick={handleToNai} className="w-[148px] h-[50px] border-2 border-[#262626] inline-block text-center leading-[50px]">
                            View Cart
-                         </Link>
+                         </a>
                        </div>
                        <div className="">
                          <a
@@ -251,9 +285,10 @@ const Navbar = () => {
                    </div>
                  </div>
                 ))}
-               
+            
               </div>
             )}
+           </div>
           </div>
         </Flex>
       </Container>
